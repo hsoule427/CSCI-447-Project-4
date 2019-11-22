@@ -55,6 +55,9 @@ class FFNN():
         # Initializes weights via a normal distribution.
         self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
             for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
+        
+        print("WEIGHT VECTOR:")
+        print(self.weight_vec)
 
         # Initializes biases via a normal distribution.
         self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
