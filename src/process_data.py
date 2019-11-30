@@ -9,6 +9,7 @@ from database import database as db
 import random
 import os
 import numpy as np
+import shared_functions as sf
 
 """ -------------------------------------------------------------
 @param  input_database  The database file (of type .data) to be processed
