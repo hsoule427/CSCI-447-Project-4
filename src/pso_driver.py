@@ -17,6 +17,8 @@ selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
 
 db = prepare_data.prepare_db(selected_dbs[0], pm)
 
+print(db.get_data())
+
 # FFNN stuff
 
 # BEGIN classification FFNN
@@ -29,16 +31,18 @@ if db.get_dataset_type() == 'classification':
     # (2) Hidden layers has arbitrary number of nodes.
     # (3) Output layer has 1 node per possible classification.
     
-    layer_sizes = [len(db.get_attr()), 30, len(db.get_class_list())]   # (3)
+    layer_sizes = [len(db.get_attr()),          # (1)
+                    30,                         # (2)
+                    len(db.get_class_list())]   # (3)
 
     # This number is arbitrary.
     # TODO: Tune this per dataset
     learning_rate = 1.5
-    
+
     ffnn = FFNN(layer_sizes, db.get_dataset_type(), 
-        db.get_data(), db.get_classifier_col(),
+        db.get_data(),
         learning_rate,
-        class_list=db.get_class_list())
+        class_list=db.get_class_list(),num_epochs=1)
 
 # BEGIN regression FFNN
 elif db.get_dataset_type() == 'regression':

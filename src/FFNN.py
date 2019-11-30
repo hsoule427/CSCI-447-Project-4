@@ -44,9 +44,9 @@ class FFNN():
 
         self.data = data
         self.old_data = self.data[:]
-
+        
         self.learning_rate = learning_rate
-
+        
         if class_list:
             self.class_list = class_list
 
@@ -56,8 +56,8 @@ class FFNN():
         self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
             for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
         
-        print("WEIGHT VECTOR:")
-        print(self.weight_vec)
+        # print("WEIGHT VECTOR:")
+        # print(self.weight_vec)
 
         # Initializes biases via a normal distribution.
         self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
@@ -106,9 +106,11 @@ class FFNN():
             for curr_batch in batches:
                 new_b = [np.zeros(b.shape) for b in self.bias_vec]
                 new_w = [np.zeros(w.shape) for w in self.weight_vec]
-
                 # Perform backpropagation and apply changes
                 for ex, desired_out in curr_batch:
+                    # print("EX: ", ex)
+                    # print("DESIRED OUT: ", desired_out)
+                    # print("-------------------")
                     delta_b, delta_w = self.back_prop(ex, desired_out)
                     new_b = [bias + change for bias, change in zip(new_b, delta_b)]
                     new_w = [weight + change for weight, change in zip(new_w, delta_w)]
