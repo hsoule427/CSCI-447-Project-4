@@ -50,7 +50,7 @@ class FFNN():
         self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
 
         # Start the learning process...
-        self.grad_desc()
+        # self.grad_desc()
 
     ''' ----------------------------------------------
     Returns the output layer produced from in_act_vec
@@ -97,9 +97,6 @@ class FFNN():
                 new_w = [np.zeros(w.shape) for w in self.weight_vec]
                 # Perform backpropagation and apply changes
                 for ex, desired_out in curr_batch:
-                    # print("EX: ", ex)
-                    # print("DESIRED OUT: ", desired_out)
-                    # print("-------------------")
                     delta_b, delta_w = self.back_prop(ex, desired_out)
                     new_b = [bias + change for bias, change in zip(new_b, delta_b)]
                     new_w = [weight + change for weight, change in zip(new_w, delta_w)]
@@ -165,6 +162,36 @@ class FFNN():
             delta_w[-L] = np.dot(delta_l, a_vecs[-L - 1].transpose())
 
         return delta_b, delta_w
+
+    
+    def feed_forward(self):
+        MSE = 0
+        # Loop over all points
+        for a, desired_out in self.data:
+            in_act_vec = a
+            a_vecs = [in_act_vec]
+            z_vecs = []
+
+            # # For every weight vector and respective layer bias,
+            # # find every layer's pre-and-post-sigmoid-activation vector
+            for b, w in zip(self.bias_vec, self.weight_vec):
+                z = np.dot(w, a) + b
+                z_vecs.append(z)
+                a = sf.sigmoid(z)
+                a_vecs.append(a)
+            
+            MSE += self.cost(a_vecs[-1], desired_out) ** 2
+            return MSE / len(self.data)
+            # print("predicted output: ", a_vecs[-1])
+            # print("correct output: ", desired_out)
+            # print("cost: ", self.cost(a_vecs[-1], desired_out))
+
+
+            
+
+    def cost(self, out_acts, desired_out):
+        return(np.sum((out_acts-desired_out)**2))
+
 
     ''' ----------------------------------------------
     The derivative of our cost function

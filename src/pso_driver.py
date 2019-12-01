@@ -17,8 +17,6 @@ selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
 
 db = prepare_data.prepare_db(selected_dbs[0], pm)
 
-print(db.get_data())
-
 # FFNN stuff
 
 # BEGIN classification FFNN
@@ -39,10 +37,11 @@ if db.get_dataset_type() == 'classification':
     # TODO: Tune this per dataset
     learning_rate = 1.5
 
-    ffnn = FFNN(layer_sizes, db.get_dataset_type(), 
-        db.get_data(),
-        learning_rate,
-        class_list=db.get_class_list(),num_epochs=1)
+    ffnn = FFNN(layer_sizes, db.get_data(), learning_rate, class_list=db.get_class_list(),num_epochs=1)
+    cost = ffnn.feed_forward()
+    print("COST: ", cost)
+    
+    
 
 # BEGIN regression FFNN
 elif db.get_dataset_type() == 'regression':
