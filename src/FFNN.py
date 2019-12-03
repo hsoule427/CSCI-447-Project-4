@@ -228,4 +228,4 @@ class FFNN():
         self.weight_vec = weight
     
     def set_biases(self, biases):
-        self.biases = biases
+        self.bias_vec = biases

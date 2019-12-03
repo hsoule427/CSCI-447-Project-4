@@ -95,7 +95,7 @@ def calc_weight_vec_length(layer_sizes):
 def calc_bias_vec_length(layer_sizes):
     return sum([l for l in layer_sizes[1:]])
 
-def calc_total_vec_length(layer_sizes)
+def calc_total_vec_length(layer_sizes):
     return calc_weight_vec_length(layer_sizes) + calc_bias_vec_length(layer_sizes)
 
 '''---------------------------------------------
@@ -104,7 +104,7 @@ def calc_total_vec_length(layer_sizes)
 def encode_weight_and_bias(particle, layer_sizes):
     num_biases = calc_bias_vec_length(layer_sizes)
     bias_vec = encode_biases(particle[-num_biases:], layer_sizes)
-    weight_vec = encode_weights(particle[:num_biases], layer_sizes)
+    weight_vec = encode_weights(particle[:len(particle)-num_biases], layer_sizes)
     return weight_vec, bias_vec
 
 

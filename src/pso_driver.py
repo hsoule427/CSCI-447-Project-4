@@ -39,18 +39,7 @@ if db.get_dataset_type() == 'classification':
     # This number is arbitrary.
     # TODO: Tune this per dataset
     learning_rate = 1.5
-    bias_vec = [np.random.randn(x, 1) for x in layer_sizes[1:]]
-    print("ORIGINAL BIASES:")
-    print(bias_vec)
-    print("DECODED BIASES:")
-    decoded = sf.decode_biases(bias_vec)
-    print(decoded)
-    print('DECODED LENGTH: ', len(decoded))
-    print('CALCULATED LENGTH: ', sf.calc_bias_vec_length(layer_sizes))
-    print('ENCODED BIASES:')
-    print(sf.encode_biases(decoded, layer_sizes))
-
-    # pso.main_loop(db, layer_sizes, learning_rate, epochs=1)
+    pso.main_loop(db, layer_sizes, learning_rate, epochs=1)
     
     
     
