@@ -29,10 +29,10 @@ def sigmoid_prime(w_dot_a_plus_b):
     return sigmoid(w_dot_a_plus_b) * (1 - sigmoid(w_dot_a_plus_b))
 
 '''----------------------------------------------
-@brief  encode the multi-dimensional set of weights from ffnn into a 1D array
+@brief  decode the multi-dimensional set of weights from ffnn into a 1D array
         to be used with the different EAs
 '''
-def encode_weights(weight_vec):
+def decode_weights(weight_vec):
     encoded_weights = []
     # Yes it's three embedded for loops don't judge me
     for array in weight_vec:
@@ -43,9 +43,9 @@ def encode_weights(weight_vec):
     return encoded_weights
 
 '''----------------------------------------------
-@brief  decode the 1d encoding back to original form for the ffnn
+@brief  encode the 1d weight vec to original form for the ffnn
 '''
-def decode_weights(weight_vec, layer_sizes):
+def encode_weights(weight_vec, layer_sizes):
     new_weight_vec = []
     
     idx = 0
@@ -59,6 +59,37 @@ def decode_weights(weight_vec, layer_sizes):
         new_weight_vec.append(np.array(new_vec))
     
     return new_weight_vec
+
+'''---------------------------------------------
+@brief  Decode bias vec to 1d array
+'''
+def decode_biases(biases):
+    vec = []
+    for arr in biases:
+        for num in arr:
+            vec.append(num[0])
+    return vec
+
+'''----------------------------------------------
+@brief   
+'''
+def encode_biases(biases, layer_sizes):
+    vec = []
+    idx = 0
+    for l in layer_sizes[1:]:
+        # vec.append(np.array(biases[idx:idx+l]))
+        arr = []
+        for i in range(idx, idx+l):
+            arr.append([biases[i]])
+        vec.append(np.array(arr))
+        idx += l
+    
+    # for arr in vec:
+    #     for i,num in enumerate(arr):
+    #         arr[i] = [num]
+
+    return vec
+
 
 '''---------------------------------------------
 @brief  Calculate the length of a 1d array of weights from the layer sizes
