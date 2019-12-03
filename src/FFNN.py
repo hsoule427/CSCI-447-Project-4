@@ -164,7 +164,7 @@ class FFNN():
         return delta_b, delta_w
 
     
-    def feed_forward(self):
+    def get_fitness(self):
         MSE = 0
         # Loop over all points
         for a, desired_out in self.data:
@@ -224,5 +224,8 @@ class FFNN():
         return num_correct, total
     
 
-    def set_weight(weight):
+    def set_weight(self, weight):
         self.weight_vec = weight
+    
+    def set_biases(self, biases):
+        self.biases = biases

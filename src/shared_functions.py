@@ -71,22 +71,17 @@ def decode_biases(biases):
     return vec
 
 '''----------------------------------------------
-@brief   
+@brief encode a bias array into correct form for FFNN  
 '''
 def encode_biases(biases, layer_sizes):
     vec = []
     idx = 0
     for l in layer_sizes[1:]:
-        # vec.append(np.array(biases[idx:idx+l]))
         arr = []
         for i in range(idx, idx+l):
             arr.append([biases[i]])
         vec.append(np.array(arr))
         idx += l
-    
-    # for arr in vec:
-    #     for i,num in enumerate(arr):
-    #         arr[i] = [num]
 
     return vec
 
@@ -96,6 +91,24 @@ def encode_biases(biases, layer_sizes):
 '''
 def calc_weight_vec_length(layer_sizes):
     return sum([layer_sizes[i-1] * layer_sizes[i] for i in range(1,len(layer_sizes))])
+
+def calc_bias_vec_length(layer_sizes):
+    return sum([l for l in layer_sizes[1:]])
+
+def calc_total_vec_length(layer_sizes)
+    return calc_weight_vec_length(layer_sizes) + calc_bias_vec_length(layer_sizes)
+
+'''---------------------------------------------
+@brief  break a 1d particle of weights and biases into ffnn forms
+'''
+def encode_weight_and_bias(particle, layer_sizes):
+    num_biases = calc_bias_vec_length(layer_sizes)
+    bias_vec = encode_biases(particle[-num_biases:], layer_sizes)
+    weight_vec = encode_weights(particle[:num_biases], layer_sizes)
+    return weight_vec, bias_vec
+
+
+
             
     
 

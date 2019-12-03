@@ -11,6 +11,8 @@ import numpy as np
 import os.path
 import prepare_data
 import shared_functions as sf
+import pso
+
 
 pm = path_manager()
 selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
@@ -37,15 +39,21 @@ if db.get_dataset_type() == 'classification':
     # This number is arbitrary.
     # TODO: Tune this per dataset
     learning_rate = 1.5
+    bias_vec = [np.random.randn(x, 1) for x in layer_sizes[1:]]
+    print("ORIGINAL BIASES:")
+    print(bias_vec)
+    print("DECODED BIASES:")
+    decoded = sf.decode_biases(bias_vec)
+    print(decoded)
+    print('DECODED LENGTH: ', len(decoded))
+    print('CALCULATED LENGTH: ', sf.calc_bias_vec_length(layer_sizes))
+    print('ENCODED BIASES:')
+    print(sf.encode_biases(decoded, layer_sizes))
 
-    ffnn = FFNN(layer_sizes, db.get_data(), learning_rate, class_list=db.get_class_list(),num_epochs=1)
-    print("WEIGHT VEC:")
-    print(ffnn.weight_vec)
-    print('ENCODED WEIGHT VEC:')
-    encoded_weight = sf.encode_weights(ffnn.weight_vec)
-    print(encoded_weight)
-    print('ENCODED WEIGHT VEC LENGTH: ', len(encoded_weight))
-    print('CALCULATED LENGTH: ', sf.calc_weight_vec_length(layer_sizes))
+    # pso.main_loop(db, layer_sizes, learning_rate, epochs=1)
+    
+    
+    
     
     
     
