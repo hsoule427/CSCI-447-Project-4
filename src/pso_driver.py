@@ -10,6 +10,7 @@ from path_manager import pathManager as path_manager
 import numpy as np
 import os.path
 import prepare_data
+import shared_functions as sf
 
 pm = path_manager()
 selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
@@ -30,7 +31,7 @@ if db.get_dataset_type() == 'classification':
     # (3) Output layer has 1 node per possible classification.
     
     layer_sizes = [len(db.get_attr()),          # (1)
-                    30,                         # (2)
+                    5, 5,                       # (2)
                     len(db.get_class_list())]   # (3)
 
     # This number is arbitrary.
@@ -38,8 +39,16 @@ if db.get_dataset_type() == 'classification':
     learning_rate = 1.5
 
     ffnn = FFNN(layer_sizes, db.get_data(), learning_rate, class_list=db.get_class_list(),num_epochs=1)
-    cost = ffnn.feed_forward()
-    print("COST: ", cost)
+    print("WEIGHT VEC:")
+    print(ffnn.weight_vec)
+    print('ENCODED WEIGHT VEC:')
+    encoded_weight = sf.encode_weights(ffnn.weight_vec)
+    print(encoded_weight)
+    print('ENCODED WEIGHT VEC LENGTH: ', len(encoded_weight))
+    print('CALCULATED LENGTH: ', sf.calc_weight_vec_length(layer_sizes))
+    
+    
+    
     
     
 
