@@ -28,11 +28,11 @@ class FFNN():
                    'classification' or 'regression'
     '''
 
-    def __init__(self, layer_sizes, data, learning_rate,
+    def __init__(self, data, learning_rate,
                  class_list=None, num_epochs=10):
 
         # Initialization from constructor parameters
-        self.layer_sizes = layer_sizes
+        # self.layer_sizes = layer_sizes
         self.data = data
         self.old_data = self.data[:]
         self.learning_rate = learning_rate
@@ -43,11 +43,11 @@ class FFNN():
         self.epochs = [[] for x in range(num_epochs)]
 
         # Initializes weights via a normal distribution.
-        self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
-                           for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
+        # self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
+        #                    for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
 
         # Initializes biases via a normal distribution.
-        self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
+        # self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
 
         # Start the learning process...
         # self.grad_desc()
@@ -222,3 +222,7 @@ class FFNN():
                 num_correct += 1
 
         return num_correct, total
+    
+
+    def set_weight(weight):
+        self.weight_vec = weight
