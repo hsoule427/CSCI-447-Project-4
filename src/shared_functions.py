@@ -107,7 +107,15 @@ def encode_weight_and_bias(particle, layer_sizes):
     weight_vec = encode_weights(particle[:len(particle)-num_biases], layer_sizes)
     return weight_vec, bias_vec
 
-
+'''
+Get the average euclidean distance between a set of points (weight vectors)
+'''
+def calc_avg_distance(points):
+    total = 0
+    for i in range(0,len(points)-1):
+        for j in range(i+1, len(points)):
+            total += np.linalg.norm(points[i] - points[j])
+    return total / len(points)
 
             
     

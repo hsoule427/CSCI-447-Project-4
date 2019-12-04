@@ -1,8 +1,3 @@
-""" -------------------------------------------------------------
-@file        pso_driver.py
-@brief       A file for testing our pso implementation
-"""
-
 import process_data
 import Cost_Functions as cf
 from FFNN import FFNN
@@ -11,8 +6,7 @@ import numpy as np
 import os.path
 import prepare_data
 import shared_functions as sf
-import pso
-
+import diff_evo
 
 pm = path_manager()
 selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
@@ -20,9 +14,6 @@ selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
 
 db = prepare_data.prepare_db(selected_dbs[0], pm)
 
-# FFNN stuff
-
-# BEGIN classification FFNN
 if db.get_dataset_type() == 'classification':
 
     # BEGIN preprocessing
@@ -40,11 +31,9 @@ if db.get_dataset_type() == 'classification':
     # This number is arbitrary.
     # TODO: Tune this per dataset
     learning_rate = 1.5
-    # print(layer_sizes)
-    # print(db.get_data()[0][0])
-    # print(len(db.get_data()[0][0]))
-    # # pso.main_loop(db, layer_sizes, learning_rate, epochs=1)
-    # print(len(db.get_attr()))
+
+    diff_evo.main_loop(db, layer_sizes, learning_rate, generations=1000)
+
 
 
     
