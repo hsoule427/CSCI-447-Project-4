@@ -164,33 +164,42 @@ class FFNN():
         return delta_b, delta_w
 
     
-    def get_fitness(self):
-        MSE = 0
+    '''
+    @brief          compute the overall fitness of the model with one pass thru all the data
+    @param fit_fxn  a reference to the fitness function we will use, different for classification and regression
+    '''
+    def get_fitness(self, fit_fxn):
+        total = 0
         # Loop over all points
         for a, desired_out in self.data:
             in_act_vec = a
             a_vecs = [in_act_vec]
             z_vecs = []
-
-            # # For every weight vector and respective layer bias,
-            # # find every layer's pre-and-post-sigmoid-activation vector
+            # For every weight vector and respective layer bias,
+            # find every layer's pre-and-post-sigmoid-activation vector
             for b, w in zip(self.bias_vec, self.weight_vec):
                 z = np.dot(w, a) + b
                 z_vecs.append(z)
                 a = sf.sigmoid(z)
                 a_vecs.append(a)
             
-            MSE += self.cost(a_vecs[-1], desired_out) ** 2
-            return MSE / len(self.data)
-            # print("predicted output: ", a_vecs[-1])
-            # print("correct output: ", desired_out)
-            # print("cost: ", self.cost(a_vecs[-1], desired_out))
+            # total += self.cost(a_vecs[-1], desired_out) ** 2
+            total += fit_fxn(a_vecs[-1], desired_out)
+            # self.classification_error(a_vecs[-1], desired_out)
+            # print('--------------------------')
+        return total / len(self.data)
 
 
             
 
     def cost(self, out_acts, desired_out):
-        return(np.sum((out_acts-desired_out)**2))
+        return(np.sum((out_acts-desired_out) ** 2))
+    
+    def classification_error(self, predicted, desired):
+        print("PREDICTED:")
+        print(predicted)
+        print("DESIRED:")
+        print(desired)
 
 
     ''' ----------------------------------------------
