@@ -117,6 +117,20 @@ def calc_avg_distance(points):
             total += np.linalg.norm(points[i] - points[j])
     return total / len(points)
 
+
+'''
+@brief compute the classification error between predicted probs and desired probs
+fitness function for classification datasets
+@param a - the predicted probablilites
+@param d - the desired probs
+'''
+def classification_error(a, d):
+    max_idx = np.argmax(a)
+    new_probs = np.array([[1] if i == max_idx else [0] for i in range(len(a))])
+    return int(np.array_equal(new_probs, d))
+
+
+
             
     
 
