@@ -43,8 +43,7 @@ if db.get_dataset_type() == 'classification':
     ffnn.set_weight(weights)
     ffnn.set_biases(biases)
 
-    # diff_evo.main_loop(db, layer_sizes, learning_rate, generations=1000)
-    ffnn.get_fitness(sf.classification_error)
+    diff_evo.main_loop(db, layer_sizes, learning_rate, generations=1000)
 
 
 

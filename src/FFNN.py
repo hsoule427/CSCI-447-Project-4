@@ -175,6 +175,7 @@ class FFNN():
             in_act_vec = a
             a_vecs = [in_act_vec]
             z_vecs = []
+            
             # For every weight vector and respective layer bias,
             # find every layer's pre-and-post-sigmoid-activation vector
             for b, w in zip(self.bias_vec, self.weight_vec):
@@ -183,10 +184,7 @@ class FFNN():
                 a = sf.sigmoid(z)
                 a_vecs.append(a)
             
-            # total += self.cost(a_vecs[-1], desired_out) ** 2
             total += fit_fxn(a_vecs[-1], desired_out)
-            # self.classification_error(a_vecs[-1], desired_out)
-            # print('--------------------------')
         return total / len(self.data)
 
 
@@ -194,12 +192,6 @@ class FFNN():
 
     def cost(self, out_acts, desired_out):
         return(np.sum((out_acts-desired_out) ** 2))
-    
-    def classification_error(self, predicted, desired):
-        print("PREDICTED:")
-        print(predicted)
-        print("DESIRED:")
-        print(desired)
 
 
     ''' ----------------------------------------------

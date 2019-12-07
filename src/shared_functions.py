@@ -120,7 +120,7 @@ def calc_avg_distance(points):
 
 '''
 @brief compute the classification error between predicted probs and desired probs
-fitness function for classification datasets
+       this is the fitness function for classification datasets
 @param a - the predicted probablilites
 @param d - the desired probs
 '''
@@ -128,6 +128,12 @@ def classification_error(a, d):
     max_idx = np.argmax(a)
     new_probs = np.array([[1] if i == max_idx else [0] for i in range(len(a))])
     return int(np.array_equal(new_probs, d))
+
+'''
+@brief  fitness function for regression
+'''
+def squared_error(a, d):
+    return (a - d) ** 2
 
 
 

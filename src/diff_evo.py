@@ -16,14 +16,20 @@ def get_rand_indices(idx, pop_size):
             indices.append(num)
     return indices
 
+
 def candidate_vector(x1,x2,x3,beta):
     return x1 + beta * (x2 - x3)
 
-def calculate_fitness(ffnn, layer_sizes, weight_vec):
+
+def calculate_fitness(ffnn, layer_sizes, weight_vec, db_type):
     weights, biases = sf.encode_weight_and_bias(weight_vec, layer_sizes)
     ffnn.set_weight(weights)
     ffnn.set_biases(biases)
-    return ffnn.get_fitness()
+    if db_type == 'classification':
+        return ffnn.get_fitness(sf.classification_error)
+    else: 
+        return ffnn.get_fitness(sf.squared_error)
+
 
 def binomial_crossover(x,v,pr=0.7):
     u = deepcopy(v)
@@ -48,9 +54,9 @@ def main_loop(db, layer_sizes, learning_rate, generations=100):
             x3 = population[rand_idxs[2]]
             v = candidate_vector(x1,x2,x3,beta)
             # Calculate fitness with candidate vector
-            fitness_v = calculate_fitness(ffnn, layer_sizes, v)
+            fitness_v = calculate_fitness(ffnn, layer_sizes, v, db.get_dataset_type())
             # Now do same for current vector in population
-            fitness_p = calculate_fitness(ffnn, layer_sizes, p)
+            fitness_p = calculate_fitness(ffnn, layer_sizes, p, db.get_dataset_type())
             if fitness_v < fitness_p:
                 population[i] = binomial_crossover(p,v)
         print('AVG DISTANCE: ', sf.calc_avg_distance(population))
