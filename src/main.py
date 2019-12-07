@@ -150,13 +150,13 @@ def main():
             # (1) First layer (input layer) has 1 node per attribute.
             # (2) Hidden layers has arbitrary number of nodes.
             # (3) Output layer has 1 node per possible classification.
-            layer_sizes = [len(db.get_attr()), 10, len(db.get_class_list())]
+            layer_sizes = [len(db.get_attr()), 50, len(db.get_class_list())]
 
                 # This number is arbitrary.
                 # NOTICE: Tune this per dataset
-            learning_rate = .5
+            learning_rate = .3
 
-            ffnn = FFNN(layer_sizes, db.get_data(), learning_rate)
+            ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
             sys.exit()
 
         # BEGIN regression FFNN
@@ -167,11 +167,16 @@ def main():
             # (1) First layer (input layer) has 1 node per attribute.
             # (2) Hidden layers has arbitrary number of nodes.
             # (3) Output layer has 1 node, just some real number.
-            layer_sizes = [len(db.get_attr()) - 1, 5, 5, 1]
+            layer_sizes = [len(db.get_attr()) - 1, 50, 1]
 
-            learning_rate = .0001
+            # machine's learning rate
+            # learning_rate = .60
 
-            ffnn = FFNN(layer_sizes, db.get_data(), learning_rate)
+            # Forest fire's learning rate
+            learning_rate = .01
+
+            ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
+            sys.exit()
 
         else:
             print('Database type invalid. Type = ' + db.get_dataset_type())

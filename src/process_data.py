@@ -6,6 +6,7 @@ TODO: Make this a Class, update UML
 """
 
 from database import database as db
+import sys
 import random
 import os
 import numpy as np
@@ -201,20 +202,25 @@ def FFNN_encoding(db):
     for ex in db.get_data():
         new_ex = []
         encode = []
-        for ex_idx, attr in enumerate(ex):
-            if len(possible_vals[ex_idx]) == 0:
+        for attr_idx, attr in enumerate(ex):
+            if len(possible_vals[attr_idx]) == 0:
                 new_ex.append(np.array([attr], dtype=np.float32))
             else:
+
                 # One-hot encoding
-                if ex_idx == db.get_classifier_col():
-                    temp = np.asarray([1 if attr == val else 0 for val in possible_vals[ex_idx]])
-                    encode = np.zeros((len(possible_vals[ex_idx]), 1))
-                    encode[np.argmax(temp)] = 1
+                if attr_idx == db.get_classifier_col():
+                    if db.get_dataset_type() == 'classification':
+                        temp = np.asarray([1 if attr == val else 0 for val in possible_vals[attr_idx]])
+                        encode = np.zeros((len(possible_vals[attr_idx]), 1))
+                        encode[np.argmax(temp)] = 1
+                    elif db.get_dataset_type() == 'regression':
+                        encode = np.asarray(sf.sigmoid(attr))
                 
                 # Integer encoding
                 else:
-                    new_ex.append(np.array([possible_vals[ex_idx].index(attr)], dtype=np.float32))
-        new_data.append((np.asarray(new_ex), encode))
+                    new_ex.append(np.array([possible_vals[attr_idx].index(attr)], dtype=np.float32))
+
+        new_data.append((sf.sigmoid(np.asarray(new_ex)), encode))
     
     db.set_data(new_data)
     db.set_class_list(possible_vals[db.get_classifier_col()])

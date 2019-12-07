@@ -15,7 +15,6 @@ import numpy as np
 # Custom imports
 import shared_functions as sf
 
-
 # ----------------------------------------------
 class FFNN():
     ''' ----------------------------------------------
@@ -28,12 +27,13 @@ class FFNN():
                    'classification' or 'regression'
     '''
 
-    def __init__(self, layer_sizes, data, learning_rate,
-                 class_list=None, num_epochs=10):
+    def __init__(self, layer_sizes, data, db_type, learning_rate,
+                 class_list=None, num_epochs=100):
 
         # Initialization from constructor parameters
         self.layer_sizes = layer_sizes
         self.data = data
+        self.db_type = db_type
         self.old_data = self.data[:]
         self.learning_rate = learning_rate
 
@@ -116,13 +116,24 @@ class FFNN():
             # Print results of the epochs
             # print_partial_progress is set manually
             # in the function parameters
-            if print_partial_progress is False:
-                if e == 0 or e == num_epoch - 1:
+            if self.db_type == 'classification':
+                if print_partial_progress is False:
+                    if e == 0 or e == num_epoch - 1:
+                        num_correct, total = self.zero_one_loss()
+                        print('Epoch {}: {} / {}'.format(e, num_correct, total))
+                else:
                     num_correct, total = self.zero_one_loss()
                     print('Epoch {}: {} / {}'.format(e, num_correct, total))
-            else:
-                num_correct, total = self.zero_one_loss()
-                print('Epoch {}: {} / {}'.format(e, num_correct, total))
+
+            elif self.db_type == 'regression':
+                if print_partial_progress is False:
+                    if e == 0 or e == num_epoch - 1:
+                        avg_error = self.regression_error()
+                        print("Epoch {}'s average error: {}".format(e, avg_error))
+
+                else:
+                    avg_error = self.regression_error()
+                    print("Epoch {}'s average error: {}".format(e, avg_error))
 
     '''
     ----------------------------------------------
@@ -152,15 +163,14 @@ class FFNN():
         # Notice this is the same as the "for layer_idx..." loop below.
         # We need to do this first step at the last layer in
         # a particular way, so it goes outside of the loop
-        delta_l = self.cost_prime(a_vecs[-1], desired_out) * sf.sigmoid_prime(z_vecs[-1])
-        delta_b[-1] = delta_l
-        delta_w[-1] = np.dot(delta_l, a_vecs[-2].transpose())
-        for L in range(2, len(self.layer_sizes)):
-            z = z_vecs[-L]
-            sp = sf.sigmoid_prime(z)
-            delta_l = np.dot(self.weight_vec[-L + 1].transpose(), delta_l) * sp
-            delta_b[-L] = delta_l
-            delta_w[-L] = np.dot(delta_l, a_vecs[-L - 1].transpose())
+        delta_layer = self.cost_prime(a_vecs[-1], desired_out) * sf.sigmoid_prime(z_vecs[-1])
+        delta_b[-1] = delta_layer
+        delta_w[-1] = np.dot(delta_layer, a_vecs[-2].transpose())
+        for layer in range(2, len(self.layer_sizes)):
+            delta_layer = np.dot(self.weight_vec[-layer + 1].transpose(), delta_layer)\
+                          * sf.sigmoid_prime(z_vecs[-layer])
+            delta_b[-layer] = delta_layer
+            delta_w[-layer] = np.dot(delta_layer, a_vecs[-layer - 1].transpose())
 
         return delta_b, delta_w
 
@@ -193,3 +203,11 @@ class FFNN():
                 num_correct += 1
 
         return num_correct, total
+
+    def regression_error(self):
+        avg_error = 0
+
+        for actual_out, desired_out in self.old_data:
+            avg_error += (self.feed_forward(actual_out) - desired_out)**2
+
+        return avg_error / len(self.old_data)
