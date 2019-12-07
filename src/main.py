@@ -150,10 +150,10 @@ def main():
             # (1) First layer (input layer) has 1 node per attribute.
             # (2) Hidden layers has arbitrary number of nodes.
             # (3) Output layer has 1 node per possible classification.
-            layer_sizes = [len(db.get_attr()), 50, len(db.get_class_list())]
+            layer_sizes = [len(db.get_attr()) - 1, 50, len(db.get_class_list())]
 
                 # This number is arbitrary.
-                # NOTICE: Tune this per dataset
+                # TODO Tune this per dataset
             learning_rate = .3
 
             ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)

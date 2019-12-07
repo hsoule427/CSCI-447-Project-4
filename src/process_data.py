@@ -173,7 +173,6 @@ def data_correction(input_db, attribute_count):
 
 # Do the necessary encoding for the FFNN
 def FFNN_encoding(db):
-    print(db)
 
     # Find which attributes are numbers
     is_num = [True for attr in db.get_data()[0]]
