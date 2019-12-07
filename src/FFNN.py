@@ -28,29 +28,28 @@ class FFNN():
     '''
 
     def __init__(self, layer_sizes, data, db_type, learning_rate,
-                 class_list=None, num_epochs=100):
 
         # Initialization from constructor parameters
-        self.layer_sizes = layer_sizes
+        # self.layer_sizes = layer_sizes
         self.data = data
         self.db_type = db_type
         self.old_data = self.data[:]
         self.learning_rate = learning_rate
-
+        
         if class_list:
             self.class_list = class_list
 
         self.epochs = [[] for x in range(num_epochs)]
 
         # Initializes weights via a normal distribution.
-        self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
-                           for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
+        # self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
+        #                    for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
 
         # Initializes biases via a normal distribution.
-        self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
+        # self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
 
         # Start the learning process...
-        self.grad_desc()
+        # self.grad_desc()
 
     ''' ----------------------------------------------
     Returns the output layer produced from in_act_vec
@@ -95,7 +94,6 @@ class FFNN():
             for curr_batch in batches:
                 new_b = [np.zeros(b.shape) for b in self.bias_vec]
                 new_w = [np.zeros(w.shape) for w in self.weight_vec]
-
                 # Perform backpropagation and apply changes
                 for ex, desired_out in curr_batch:
                     delta_b, delta_w = self.back_prop(ex, desired_out)
@@ -174,6 +172,37 @@ class FFNN():
 
         return delta_b, delta_w
 
+    
+    '''
+    @brief          compute the overall fitness of the model with one pass thru all the data
+    @param fit_fxn  a reference to the fitness function we will use, different for classification and regression
+    '''
+    def get_fitness(self, fit_fxn):
+        total = 0
+        # Loop over all points
+        for a, desired_out in self.data:
+            in_act_vec = a
+            a_vecs = [in_act_vec]
+            z_vecs = []
+            
+            # For every weight vector and respective layer bias,
+            # find every layer's pre-and-post-sigmoid-activation vector
+            for b, w in zip(self.bias_vec, self.weight_vec):
+                z = np.dot(w, a) + b
+                z_vecs.append(z)
+                a = sf.sigmoid(z)
+                a_vecs.append(a)
+            
+            total += fit_fxn(a_vecs[-1], desired_out)
+        return total / len(self.data)
+
+
+            
+
+    def cost(self, out_acts, desired_out):
+        return(np.sum((out_acts-desired_out) ** 2))
+
+
     ''' ----------------------------------------------
     The derivative of our cost function
     if the cost function is (a - y)^2
@@ -203,6 +232,13 @@ class FFNN():
                 num_correct += 1
 
         return num_correct, total
+    
+
+    def set_weight(self, weight):
+        self.weight_vec = weight
+    
+    def set_biases(self, biases):
+        self.bias_vec = biases
 
     def regression_error(self):
         avg_error = 0
