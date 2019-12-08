@@ -17,8 +17,9 @@ import pso
 pm = path_manager()
 selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
 
-
 db = prepare_data.prepare_db(selected_dbs[0], pm)
+
+process_data.shuffle_all(db.get_data(), 1)
 
 # FFNN stuff
 
@@ -32,7 +33,7 @@ if db.get_dataset_type() == 'classification':
     # (1) First layer (input layer) has 1 node per attribute.
     # (2) Hidden layers has arbitrary number of nodes.
     # (3) Output layer has 1 node per possible classification.
-    layer_sizes = [len(db.get_attr()),          # (1)
+    layer_sizes = [len(db.get_attr())-1,        # (1)
                     5, 5,                       # (2)
                     len(db.get_class_list())]   # (3)
     
@@ -50,8 +51,8 @@ if db.get_dataset_type() == 'classification':
     # TODO: Tune this per dataset
     learning_rate = 1.5
 
-    ffnn = FFNN.init_no_weights(db.get_data(), learning_rate)
-
+    # ffnn = FFNN.init_no_weights(db.get_data(), learning_rate)
+    # fitness, distance = pso.main_loop(db,layer_sizes,learning_rate,hp)
 
 
 

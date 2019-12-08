@@ -20,13 +20,13 @@ def velocity(v_prev, pbest, gbest, p, c1, c2, inertia):
 
 
 '''
-@param db               the db object
+@param data             the db object
 @param layer_sizes      the number of neurons in each layer our neural net
 @param learning_rate    user defined learning rate (tune this?)
 @param hp               a set of the tunable hyperparameters, 
                         in this case an array of three params: [c1, c2, inertia]
 '''
-def main_loop(db, layer_sizes, learning_rate, hp, epochs=100):
+def main_loop(data, layer_sizes, learning_rate, hp, epochs=100):
     # Initialize set of particles/weights (1d)
     particles = [np.array([np.random.random() for i in range(sf.calc_total_vec_length(layer_sizes))]) \
                     for i in range(20)]
@@ -39,7 +39,7 @@ def main_loop(db, layer_sizes, learning_rate, hp, epochs=100):
     # Initialize the set of velocities, one for each particle
     v = [np.zeros(len(particles[0])) for i in range(len(particles))]
     # Initialize our net
-    ffnn = FFNN(db.get_data(), learning_rate)
+    ffnn = FFNN.init_no_weights(data, learning_rate)
     # Set the hyperparameters
     c1 = hp[0]
     c2 = hp[1]

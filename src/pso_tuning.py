@@ -23,8 +23,9 @@ def make_grid(param1, param2, param3):
 pm = path_manager()
 selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
 db = prepare_data.prepare_db(selected_dbs[0], pm)
+process_data.shuffle_all(db.get_data(), 1)
 
-tuning_file = open('pso_tuning_' + selected_dbs[0] + '.txt', 'w')
+tuning_file = open('./tuning_files/pso_tuning_' + selected_dbs[0] + '.txt', 'w')
 
 # hyperparamters
 # (1) c1 - first acceleration coefficient
@@ -47,20 +48,22 @@ if db.get_dataset_type() == 'classification':
     # (1) First layer (input layer) has 1 node per attribute.
     # (2) Hidden layers has arbitrary number of nodes.
     # (3) Output layer has 1 node per possible classification.
-    layer_sizes = [len(db.get_attr()),          # (1)
+    layer_sizes = [len(db.get_attr())-1,          # (1)
                     5, 5,                       # (2)
                     len(db.get_class_list())]   # (3)
     
     learning_rate = 1.5
+    end_idx = int(len(db.get_data())*.33)
     
     tuning_file.write('PSO TUNING\n')
     tuning_file.write('CURRENT DATABASE: ' + selected_dbs[0] + '\n')
     # Loop thru each permutation of our hyperparameters
-    for perm in permutations:
+    for i,perm in enumerate(permutations):
+        print("PERMUTATION ", i+1, "/", len(permutations))
         tuning_file.write('CURRENT PERMUTATION: ' + str(perm) + '\n')
-        fitness, avg_distance = pso.main_loop(db, layer_sizes, learning_rate, hp)
-        tuning_file.write('FINAL FITNESS: ' + fitness + '\n')
-        tuning_file.write('FINAL AVG DISTANCE: ' + avg_distance + '\n')
+        fitness, avg_distance = pso.main_loop(db.get_data()[0:end_idx], layer_sizes, learning_rate, hp)
+        tuning_file.write('FINAL FITNESS: ' + str(fitness) + '\n')
+        tuning_file.write('FINAL AVG DISTANCE: ' + str(avg_distance) + '\n')
         tuning_file.write('-----------------------------------\n')
 
 
