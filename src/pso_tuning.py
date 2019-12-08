@@ -52,7 +52,7 @@ if db.get_dataset_type() == 'classification':
     
     tuning_file.write('PSO TUNING')
     tuning_file.write('CURRENT DATABASE: ', selected_dbs[0])
-    # Loop thru each ,,
+    # Loop thru each permutation of our hyperparameters
     for perm in permutations:
         tuning_file.write('CURRENT PERMUTATION: ' + perm)
         fitness, avg_distance = pso.main_loop(db, layer_sizes, learning_rate, hp)

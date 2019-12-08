@@ -50,6 +50,12 @@ class FFNN():
 
         # Start the learning process...
         # self.grad_desc()
+    
+    @classmethod
+    def init_no_weights(self, data, learning_rate,
+                        class_list=None):
+        return cls(data, learning_rate, None)
+        
 
     ''' ----------------------------------------------
     Returns the output layer produced from in_act_vec
