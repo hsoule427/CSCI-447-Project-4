@@ -31,7 +31,7 @@ class FFNN():
                 num_epochs=100):
 
         # Initialization from constructor parameters
-        # self.layer_sizes = layer_sizes
+        self.layer_sizes = layer_sizes
         self.data = data
         self.db_type = db_type
         self.old_data = self.data[:]
@@ -43,14 +43,14 @@ class FFNN():
         self.epochs = [[] for x in range(num_epochs)]
 
         # Initializes weights via a normal distribution.
-        # self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
-        #                    for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
+        self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
+                           for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
 
         # Initializes biases via a normal distribution.
-        # self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
+        self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
 
         # Start the learning process...
-        # self.grad_desc()
+        self.grad_desc()
     
     @classmethod
     def init_no_weights(self, data, learning_rate):

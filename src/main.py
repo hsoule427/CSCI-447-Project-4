@@ -154,9 +154,10 @@ def main():
 
                 # This number is arbitrary.
                 # TODO Tune this per dataset
-            learning_rate = .3
-
-            ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
+            for x in range(2,10,2):
+                learning_rate = float(x/10)
+                print("Learning Rate: " + str(learning_rate))
+                ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
             sys.exit()
 
         # BEGIN regression FFNN
