@@ -12,12 +12,10 @@ import os.path
 import prepare_data
 import shared_functions as sf
 import pso
-import tuning
 
 
 pm = path_manager()
 selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
-tuning_file = open('pso_tuning_' + selected_dbs[0] + '.txt', 'w')
 
 
 db = prepare_data.prepare_db(selected_dbs[0], pm)
