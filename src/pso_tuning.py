@@ -80,6 +80,22 @@ elif db.get_dataset_type() == 'regression':
         1                   # (3)
     ]
 
+    learning_rate = 1.5
+    end_idx = int(len(db.get_data())*.33)
+    
+    tuning_file.write('PSO TUNING\n')
+    tuning_file.write('CURRENT DATABASE: ' + selected_dbs[0] + '\n')
+    # Loop thru each permutation of our hyperparameters
+    for i,perm in enumerate(permutations):
+        print("PERMUTATION ", i+1, "/", len(permutations))
+        tuning_file.write('CURRENT PERMUTATION: ' + str(perm) + '\n')
+        fitness, avg_distance = pso.main_loop(db.get_data()[0:end_idx], layer_sizes, learning_rate, hp)
+        tuning_file.write('FINAL FITNESS: ' + str(fitness) + '\n')
+        tuning_file.write('FINAL AVG DISTANCE: ' + str(avg_distance) + '\n')
+        tuning_file.write('-----------------------------------\n')
+    
+    
+
     
 
 else:
