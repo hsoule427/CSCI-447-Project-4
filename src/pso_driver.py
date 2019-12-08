@@ -34,7 +34,6 @@ if db.get_dataset_type() == 'classification':
     # (1) First layer (input layer) has 1 node per attribute.
     # (2) Hidden layers has arbitrary number of nodes.
     # (3) Output layer has 1 node per possible classification.
-    
     layer_sizes = [len(db.get_attr()),          # (1)
                     5, 5,                       # (2)
                     len(db.get_class_list())]   # (3)
@@ -49,10 +48,11 @@ if db.get_dataset_type() == 'classification':
         [0.01, 0.1, 0.3, 0.5, 0.7, 0.9] #(3)
     ]
     
-    
     # This number is arbitrary.
     # TODO: Tune this per dataset
     learning_rate = 1.5
+
+    ffnn = FFNN.init_no_weights(db.get_data(), learning_rate)
 
 
 
