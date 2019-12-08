@@ -37,8 +37,8 @@ class FFNN():
         self.old_data = self.data[:]
         self.learning_rate = learning_rate
         
-        if class_list:
-            self.class_list = class_list
+        # if class_list:
+        #     self.class_list = class_list
 
         self.epochs = [[] for x in range(num_epochs)]
 
@@ -53,9 +53,8 @@ class FFNN():
         # self.grad_desc()
     
     @classmethod
-    def init_no_weights(self, data, learning_rate,
-                        class_list=None):
-        return cls(data, learning_rate, None)
+    def init_no_weights(self, data, learning_rate):
+        return FFNN(None, data, None, learning_rate)
         
 
     ''' ----------------------------------------------
