@@ -28,6 +28,7 @@ class FFNN():
     '''
 
     def __init__(self, layer_sizes, data, db_type, learning_rate,
+                num_epochs=100):
 
         # Initialization from constructor parameters
         # self.layer_sizes = layer_sizes
