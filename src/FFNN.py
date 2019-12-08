@@ -28,28 +28,32 @@ class FFNN():
     '''
 
     def __init__(self, layer_sizes, data, db_type, learning_rate,
+                 num_epochs=100):
 
         # Initialization from constructor parameters
-        # self.layer_sizes = layer_sizes
+        self.layer_sizes = layer_sizes
         self.data = data
         self.db_type = db_type
         self.old_data = self.data[:]
         self.learning_rate = learning_rate
-        
-        if class_list:
-            self.class_list = class_list
 
         self.epochs = [[] for x in range(num_epochs)]
 
         # Initializes weights via a normal distribution.
-        # self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
-        #                    for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
+        self.weight_vec = [np.random.randn(y, x) / np.sqrt(x)
+                           for x, y in zip(layer_sizes[:-1], layer_sizes[1:])]
 
         # Initializes biases via a normal distribution.
-        # self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
+        self.bias_vec = [np.random.randn(x, 1) for x in self.layer_sizes[1:]]
 
         # Start the learning process...
-        # self.grad_desc()
+        self.grad_desc()
+
+    @classmethod
+    def init_no_weights(self, data, learning_rate, layer_sizes=None):
+        if layer_sizes:
+            return FFNN(layer_sizes, data, None, learning_rate)
+        return FFNN(None, data, None, learning_rate)
 
     ''' ----------------------------------------------
     Returns the output layer produced from in_act_vec
@@ -196,9 +200,6 @@ class FFNN():
             total += fit_fxn(a_vecs[-1], desired_out)
         return total / len(self.data)
 
-
-            
-
     def cost(self, out_acts, desired_out):
         return(np.sum((out_acts-desired_out) ** 2))
 
@@ -232,7 +233,6 @@ class FFNN():
                 num_correct += 1
 
         return num_correct, total
-    
 
     def set_weight(self, weight):
         self.weight_vec = weight
