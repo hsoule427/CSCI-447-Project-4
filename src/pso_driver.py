@@ -18,8 +18,9 @@ pm = path_manager()
 selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
 
 db = prepare_data.prepare_db(selected_dbs[0], pm)
-
 process_data.shuffle_all(db.get_data(), 1)
+
+end_idx = int(len(db.get_data())*.33)
 
 # FFNN stuff
 
@@ -28,8 +29,6 @@ if db.get_dataset_type() == 'classification':
 
     # BEGIN preprocessing
     process_data.FFNN_encoding(db)
-    
-
     # (1) First layer (input layer) has 1 node per attribute.
     # (2) Hidden layers has arbitrary number of nodes.
     # (3) Output layer has 1 node per possible classification.

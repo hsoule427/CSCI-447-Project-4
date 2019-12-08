@@ -89,7 +89,7 @@ elif db.get_dataset_type() == 'regression':
     for i,perm in enumerate(permutations):
         print("PERMUTATION ", i+1, "/", len(permutations))
         tuning_file.write('CURRENT PERMUTATION: ' + str(perm) + '\n')
-        fitness, avg_distance = pso.main_loop(db.get_data()[0:end_idx], layer_sizes, learning_rate, hp)
+        fitness, avg_distance = pso.main_loop(db.get_data()[0:end_idx], layer_sizes, learning_rate, perm)
         tuning_file.write('FINAL FITNESS: ' + str(fitness) + '\n')
         tuning_file.write('FINAL AVG DISTANCE: ' + str(avg_distance) + '\n')
         tuning_file.write('-----------------------------------\n')

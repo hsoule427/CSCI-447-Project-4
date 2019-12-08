@@ -127,7 +127,10 @@ def calc_avg_distance(points):
 def classification_error(a, d):
     max_idx = np.argmax(a)
     new_probs = np.array([[1] if i == max_idx else [0] for i in range(len(a))])
-    return int(np.array_equal(new_probs, d))
+    if np.array_equal(new_probs, d):
+        return 0
+    else:
+        return 1
 
 '''
 @brief  fitness function for regression

@@ -63,7 +63,7 @@ def main_loop(data, layer_sizes, learning_rate, hp, epochs=100):
                 p_best_pos[i] = deepcopy(p)
             
             # calculate velocity
-            v[i] = velocity(v[i], p_best_pos[i], g_best_pos[i], p, c1, c2, inertia)
+            v[i] = velocity(v[i], p_best_pos[i], g_best_pos, p, c1, c2, inertia)
             particles[i] = particles[i] + v[i]
         
         weight_vec, bias_vec = sf.encode_weight_and_bias(g_best_pos, layer_sizes)
