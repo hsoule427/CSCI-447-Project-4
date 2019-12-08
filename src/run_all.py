@@ -37,7 +37,7 @@ sheet = wb.add_sheet('Output')
 for iter in range(0, len(db_list)):
     sheet.write(0, iter, db_list[iter])
 
-# iter = 1
+iter = 0
 # for d in range(lower_bound, upper_bound):
 
 #     # Sets up v as a quarter of d.
@@ -64,16 +64,11 @@ for database in db_list:
     
     # TODO: save this to output file
     print("BEST RESULT:", db_best_result, "FOR:", database)
-#     # output to excel with each as a unique column
-#     sheet.write(iter, 0, d)
-#     sheet.write(iter, 1, fifo_att)
-#     sheet.write(iter, 2, sjf_att)
-#     sheet.write(iter, 3, srt_att)
     
-#     iter+=1
+    # Output best result to excel
+    sheet.write(0, iter, db_best_result)
     
-#     if sjf_att != srt_att:
-#         print("Pre-emption!!!")
-#     #print("\nRESULT:\nFIFO:",fifo_att,"\nSJF:",sjf_att,"\nSRT:",srt_att,"\n")
+    # Increment row for xlwrt sheet
+    iter += 1
     
-# wb.save("N:"+ str(n) + "K:"+ str(k) +"d:"+str(lower_bound)+"-"+str(upper_bound)+"-output.xls")
+wb.save("run_all_output.xls")
