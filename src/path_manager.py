@@ -11,7 +11,7 @@ from pathlib import Path
 class pathManager:
     
     def __init__(self):
-        print("Path manager initializing...")
+        # print("Path manager initializing...")
         
         # Stores the root directory of the project.
         self.ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +23,7 @@ class pathManager:
         # Initialize this to empty
         self.current_selected_folder = ""
         
-        print("Path manager Initialized!")
+        # print("Path manager Initialized!")
         
     ### SAVE STATE PATH RELATED:
     def get_save_state_folder(self):
