@@ -18,6 +18,7 @@ import os.path
 import process_data
 from FFNN import FFNN
 from path_manager import pathManager as path_manager
+import get_dbs as GDB
 
 # -------------------------------------------------------------
 
@@ -27,23 +28,19 @@ def select_db(databases):
         return False
     chosen = False
     db_name = ""
-    chosen_dbs = []
+    chosen_db = databases[0]
     # Selection loop for database
     while(not chosen):
-        print("\nEnter one of the databases displayed, or 'all' to run for all avalible databases.:", databases)
+        print("\nEnter one of the databases displayed:", databases)
         db_name = input("Entry: ")
         print("database:", db_name)
         if db_name in databases:
             print("Selected:", db_name)
-            chosen_dbs.append(db_name)
-            chosen = True
-        elif db_name.lower() == "all":
-            print("Running for all Databases.")
-            chosen_dbs = ["abalone", "car", "forestfires", "machine", "segmentation", "wine"]
+            chosen_db = db_name
             chosen = True
         else:
             print(db_name, "is an invalid entry. Try again.")
-    return chosen_dbs, db_name
+    return chosen_db
 
 
 # Set the path manager's current save folder to the current settings if it exists, or create it
@@ -130,57 +127,78 @@ def print_db(db):
 # -------------------------------------------------------------
 def main():
     pm = path_manager()
-    selected_dbs = select_db(pm.find_folders(pm.get_databases_dir()))
+    
+    print("LEN:",len(sys.argv))
+    # If a database has been passed in via commandline arguements, use that instead of asking user which to use.
+    selected_db = select_db(GDB.get_db())
 
-    for database in selected_dbs:
+    db = prepare_db(selected_db, pm)
 
-        # TODO fix this band-aid when i get a fuck
-        if database[0] != 'all':
-            db = prepare_db(database[0], pm)
-        else:
-            print("we don't support that shit right now\nit's a feature, not a bug :)")
-            sys.exit()
+        # BEGIN classification FFNN
+    if db.get_dataset_type() == 'classification':
 
-            # BEGIN classification FFNN
-        if db.get_dataset_type() == 'classification':
+        # BEGIN preprocessing
+        process_data.FFNN_encoding(db)
 
-            # BEGIN preprocessing
-            process_data.FFNN_encoding(db)
+        # (1) First layer (input layer) has 1 node per attribute.
+        # (2) Hidden layers has arbitrary number of nodes.
+        # (3) Output layer has 1 node per possible classification.
+        layer_sizes = [len(db.get_attr()) - 1, 50, len(db.get_class_list())]
 
-            # (1) First layer (input layer) has 1 node per attribute.
-            # (2) Hidden layers has arbitrary number of nodes.
-            # (3) Output layer has 1 node per possible classification.
-            layer_sizes = [len(db.get_attr()) - 1, 50, len(db.get_class_list())]
+        learning_rate = float(1/10)
+        ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
 
-                # This number is arbitrary.
-                # TODO Tune this per dataset
-            for x in range(2,10,2):
-                learning_rate = float(x/10)
-                print("Learning Rate: " + str(learning_rate))
-                ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
-            sys.exit()
+    # BEGIN regression FFNN
+    elif db.get_dataset_type() == 'regression':
 
-        # BEGIN regression FFNN
-        elif db.get_dataset_type() == 'regression':
+        process_data.FFNN_encoding(db)
 
-            process_data.FFNN_encoding(db)
+        # (1) First layer (input layer) has 1 node per attribute.
+        # (2) Hidden layers has arbitrary number of nodes.
+        # (3) Output layer has 1 node, just some real number.
+        layer_sizes = [len(db.get_attr()) - 1, 50, 1]
 
-            # (1) First layer (input layer) has 1 node per attribute.
-            # (2) Hidden layers has arbitrary number of nodes.
-            # (3) Output layer has 1 node, just some real number.
-            layer_sizes = [len(db.get_attr()) - 1, 50, 1]
+        learning_rate = float(1/10)
 
-            # machine's learning rate
-            # learning_rate = .60
+        ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
 
-            # Forest fire's learning rate
-            learning_rate = .01
+    else:
+        print('Database type invalid. Type = ' + db.get_dataset_type())
 
-            ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
-            sys.exit()
 
-        else:
-            print('Database type invalid. Type = ' + db.get_dataset_type())
+# -------------------------------------------------------------
+def main(db, learning_rate):
+    pm = path_manager()
+
+    db = prepare_db(db, pm)
+
+    # BEGIN classification FFNN
+    if db.get_dataset_type() == 'classification':
+
+        # BEGIN preprocessing
+        process_data.FFNN_encoding(db)
+
+        # (1) First layer (input layer) has 1 node per attribute.
+        # (2) Hidden layers has arbitrary number of nodes.
+        # (3) Output layer has 1 node per possible classification.
+        layer_sizes = [len(db.get_attr()) - 1, 50, len(db.get_class_list())]
+        
+        ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
+        return ffnn.zero_one_loss()
+    # BEGIN regression FFNN
+    elif db.get_dataset_type() == 'regression':
+
+        process_data.FFNN_encoding(db)
+
+        # (1) First layer (input layer) has 1 node per attribute.
+        # (2) Hidden layers has arbitrary number of nodes.
+        # (3) Output layer has 1 node, just some real number.
+        layer_sizes = [len(db.get_attr()) - 1, 50, 1]
+
+        ffnn = FFNN(layer_sizes, db.get_data(), db.get_dataset_type(), learning_rate)
+        return ffnn.regression_error()
+    else:
+        print('Database type invalid. Type = ' + db.get_dataset_type())
 
 # -------------------------------------------------------------
 
