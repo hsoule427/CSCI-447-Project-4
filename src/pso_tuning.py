@@ -7,7 +7,6 @@ import os.path
 import prepare_data
 import shared_functions as sf
 import pso
-import diff_evo
 
 # Create all permutations for hyperparams
 # each param is a different set
@@ -16,13 +15,15 @@ def make_grid(param1, param2, param3):
     for a in param1:
         for b in param2:
             for c in param3:
-                params.append[a,b,c]
+                params.append([a,b,c])
     return params
 
 
 
 pm = path_manager()
 selected_dbs = prepare_data.select_db(pm.find_folders(pm.get_databases_dir()))
+db = prepare_data.prepare_db(selected_dbs[0], pm)
+
 tuning_file = open('pso_tuning_' + selected_dbs[0] + '.txt', 'w')
 
 # hyperparamters
@@ -35,7 +36,7 @@ hp = [
     [0.01, 0.1, 0.3, 0.5, 0.7, 0.9] #(3)
 ]
 
-permutations = make_grid(hp)
+permutations = make_grid(hp[0], hp[1], hp[2])
 
 if db.get_dataset_type() == 'classification':
 
@@ -50,15 +51,17 @@ if db.get_dataset_type() == 'classification':
                     5, 5,                       # (2)
                     len(db.get_class_list())]   # (3)
     
-    tuning_file.write('PSO TUNING')
-    tuning_file.write('CURRENT DATABASE: ', selected_dbs[0])
+    learning_rate = 1.5
+    
+    tuning_file.write('PSO TUNING\n')
+    tuning_file.write('CURRENT DATABASE: ' + selected_dbs[0] + '\n')
     # Loop thru each permutation of our hyperparameters
     for perm in permutations:
-        tuning_file.write('CURRENT PERMUTATION: ' + perm)
+        tuning_file.write('CURRENT PERMUTATION: ' + str(perm) + '\n')
         fitness, avg_distance = pso.main_loop(db, layer_sizes, learning_rate, hp)
-        tuning_file.write('FINAL FITNESS: ' + fitness)
-        tuning_file.write('FINAL AVG DISTANCE: ' + avg_distance)
-        tuning_file.write('-----------------------------------')
+        tuning_file.write('FINAL FITNESS: ' + fitness + '\n')
+        tuning_file.write('FINAL AVG DISTANCE: ' + avg_distance + '\n')
+        tuning_file.write('-----------------------------------\n')
 
 
 
