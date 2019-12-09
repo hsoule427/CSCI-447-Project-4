@@ -60,42 +60,28 @@ def main_loop(data, db_type, layer_sizes, learning_rate, hp, epochs=100):
             weight_vec, bias_vec = sf.encode_weight_and_bias(p, layer_sizes)
             ffnn.set_weight(weight_vec)
             ffnn.set_biases(bias_vec)
-            print('CURRENT GBEST: ', g_best_score)
-            print('CURRENT PBEST: ', p_best_scores[i])
-
-            print('CURRENT FITNESS')
             
             if db_type == 'classification':
                 cost = ffnn.zero_one_loss()[0]
-                print('CURRENT FITNESS: ', cost)
                 if cost > g_best_score:
-                    print('UPDATING GBEST')
                     g_best_score = cost
                     g_best_pos = deepcopy(p)                
                 if cost > p_best_scores[i]:
-                    print('UPDATING PBEST')
                     p_best_scores[i] = cost
                     p_best_pos[i] = deepcopy(p)
 
             else: # regression dataset
                 cost = ffnn.regression_error()[0]
-                print('CURRENT FITNESS: ', cost)
                 if cost < g_best_score:
-                    print('UPDATING GBEST')
                     g_best_score = cost
                     g_best_pos = deepcopy(p)
                 if cost < p_best_scores[i]:
-                    print('UPDATING PBEST')
                     p_best_scores[i] = cost
                     p_best_pos[i] = deepcopy(p)
 
             # calculate velocity
             v[i] = velocity(v[i], p_best_pos[i], g_best_pos, p, c1, c2, inertia)
-            print('COMPUTED VELOCITY: ')
-            print(v[i][0:5])
             particles[i] = particles[i] + v[i]
-            print('UPDATED PARTICLE:')
-            print(particles[i])
         if e == 0:
             start_fts = g_best_score
         
@@ -107,10 +93,6 @@ def main_loop(data, db_type, layer_sizes, learning_rate, hp, epochs=100):
             fitness = ffnn.zero_one_loss()[0]
         else: # regression
             fitness = ffnn.regression_error()[0]
-    
-    print('UPDATED PARTICLES:')
-    for p in particles:
-        print(p[0:5])
     
     # Get final fitness and avg distance, and return
     weight_vec, bias_vec = sf.encode_weight_and_bias(g_best_pos, layer_sizes)
