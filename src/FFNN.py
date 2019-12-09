@@ -252,4 +252,4 @@ class FFNN():
         for actual_out, desired_out in self.old_data:
             avg_error += (self.feed_forward(actual_out) - desired_out)**2
 
-        return avg_error / len(self.old_data)
+        return (avg_error / len(self.old_data))
