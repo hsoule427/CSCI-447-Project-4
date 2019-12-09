@@ -30,6 +30,10 @@ def main_loop(data, db_type, layer_sizes, learning_rate, hp, epochs=100):
                     for i in range(5)]
     
     p_best_pos = deepcopy(particles)
+
+    print('INITIAL PARTICLE SET:')
+    for p in particles:
+        print(p[0:5])
     
     if db_type == 'classification':
         p_best_scores = [0 for i in range(len(particles))]
@@ -51,6 +55,8 @@ def main_loop(data, db_type, layer_sizes, learning_rate, hp, epochs=100):
     for e in range(epochs):
         print('EPOCH: ', e)
         for i,p in enumerate(particles):
+            print('PARTICLE ', i, ': ')
+            print(p[0:5])
             weight_vec, bias_vec = sf.encode_weight_and_bias(p, layer_sizes)
             ffnn.set_weight(weight_vec)
             ffnn.set_biases(bias_vec)
