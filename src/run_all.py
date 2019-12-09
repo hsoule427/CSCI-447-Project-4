@@ -53,6 +53,7 @@ for database in db_list:
     db = main.prepare_db(database, pm)
     
     db_best_result = None
+    db_best_learning_rate = None
     
     if db.get_dataset_type() == 'classification':
         # Range of learning rates to try
@@ -61,8 +62,9 @@ for database in db_list:
             # TODO Tune this per dataset
             db_run_result = main.main(database, learning_rate)
             
-            if db_best_result is None or db_run_result > db_best_result:
+            if db_best_result is None or (db_run_result[0]/db_run_result[1]) > (db_best_result[0]/db_best_result[1]):
                 db_best_result = db_run_result
+                db_best_learning_rate = learning_rate
                 
             print("FIFO RESULT:")
             print(db_run_result)
@@ -74,8 +76,10 @@ for database in db_list:
             # TODO Tune this per dataset
             db_run_result = main.main(database, learning_rate)
             
-            if db_best_result is None or db_run_result < db_best_result:
+            print(db_run_result[0][0])
+            if db_best_result is None or db_run_result[0][0] < db_best_result[0][0]:
                 db_best_result = db_run_result
+                db_best_learning_rate = learning_rate
                 
             print("FIFO RESULT:")
             print(db_run_result)
@@ -84,29 +88,10 @@ for database in db_list:
     print("\nBEST RESULT:", db_best_result, "FOR:", database, "\n")
     
     # Output best result to excel
-    sheet.write(1, iter, str(learning_rate))
+    sheet.write(1, iter, str(db_best_learning_rate))
     sheet.write(2, iter, str(db_best_result))
-    
     
     # Increment row for xlwrt sheet
     iter += 1
-    
-# Finds the best for the specified database
-def find_best(db):
-    db_best_result = None
-    
-    # Range of learning rates to try
-    for x in range(2,20,1):
-        learning_rate = float(x/10)
-        # TODO Tune this per dataset
-        db_run_result = main.main(database, learning_rate)
-        
-        if db_best_result is None or db_run_result < db_best_result:
-            db_best_result = db_run_result
-            
-        print("FIFO RESULT:")
-        print(db_run_result)
-        
-    return db_best_result
 
 wb.save("run_all_output.xls")
