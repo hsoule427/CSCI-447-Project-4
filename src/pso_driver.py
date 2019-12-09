@@ -71,7 +71,7 @@ else:
     print('Database type invalid. Type = ' + db.get_dataset_type())
     sys.exit()
 
-print(layer_sizes)
-
-sf, ef, best_pos = pso.main_loop(db.get_data(), db.get_dataset_type(), \
-                                  layer_sizes, learning_rate, [.1, .1, .4], epochs=1)
+fitness, avg_dist = pso.main_loop(db.get_data()[0:half_idx], db.get_dataset_type(), \
+                                  layer_sizes, learning_rate, [.01, .01, .4], epochs=5)
+print("FINAL OUPUT:")
+print(fitness, ", ", avg_dist)
