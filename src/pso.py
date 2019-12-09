@@ -2,6 +2,7 @@ import numpy as np
 from FFNN import FFNN
 import shared_functions as sf
 from copy import deepcopy
+import sys
 
 '''
 @param v_prev   the previous velocity
@@ -38,14 +39,14 @@ def main_loop(data, db_type, layer_sizes, learning_rate, hp, epochs=100):
     if db_type == 'classification':
         p_best_scores = [0 for i in range(len(particles))]
     else: # regression
-        p_best_scores = [float('inf') for i in range(len(particles))]
+        p_best_scores = [float(sys.maxsize) for i in range(len(particles))]
     
     g_best_pos = deepcopy(particles[0])
-    g_best_score = 0 if db_type == 'classification' else float('inf')
+    g_best_score = 0 if db_type == 'classification' else float(sys.maxsize)
     # Initialize the set of velocities, one for each particle
     v = [np.zeros(len(particles[0])) for i in range(len(particles))]
     # Initialize our net
-    ffnn = FFNN.init_no_weights(data, learning_rate)
+    ffnn = FFNN.init_no_weights(data, learning_rate, layer_sizes=layer_sizes)
     # Set the hyperparameters
     c1 = hp[0]
     c2 = hp[1]
