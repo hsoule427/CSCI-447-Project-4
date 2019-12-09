@@ -97,28 +97,19 @@ elif db.get_dataset_type() == 'regression':
     # ----------------------------------------------------------------------------------
     # Run the GA
 
-    layer_sizes = [len(db.get_attr()) - 1, 50, 1]  # (3)
-    learning_rate = .2
+    layer_sizes = [len(db.get_attr()) - 1, 50, 50, 1]  # (3)
+    learning_rate = 5
     num_chromosomes = 20
     num_generations = 10
-    mutation_rate = 2
-    mutation_std_div = 1
-
-    print('layer sizes:', layer_sizes)
-    print('learning rate:', learning_rate)
-    print('number of chromosomes:', num_chromosomes)
-    print('number of generations:', num_generations)
-    print('mutation rate:', .1)
+    mutation_rate = .5
+    mutation_std_div = .5
 
     # Initialize the population
     curr_pop = ga.init_population(sf.calc_total_vec_length(layer_sizes), num_chromosomes)
-    print('\nfirst 5 weights of one chromosome:', curr_pop[0][0], curr_pop[0][1], curr_pop[0][2], curr_pop[0][3], curr_pop[0][4])
 
     # Evalutate the initial fitness
     ffnn = FFNN.init_no_weights(db.get_data(), learning_rate, layer_sizes)
-    print('initializing the feedforward neural network...')
     curr_fitness = []
-    print('gathering the fitnesses of our chromosomes...')
     for curr_chrom in curr_pop:
         w_vec, b_vec = sf.encode_weight_and_bias(curr_chrom, ffnn.layer_sizes)
         ffnn.set_weight(w_vec)
@@ -128,17 +119,12 @@ elif db.get_dataset_type() == 'regression':
 
     # Create list of tuples of population and fitness and sort by fitness
     zipped_curr_pop = sorted(zip(curr_pop, curr_fitness), key=lambda x: x[1])[::-1]
-    print('random fitness value in initial population ——>', zipped_curr_pop[0][-1] - 0.01512345)
-
-    print_selection = True
-    print_crossover = True
-    print_mutate = True
+    print('Best fitness in initial population ——>', zipped_curr_pop[0][1])
 
     for t in range(num_generations):
 
         # Select members the new population
-        new_pop = ga.select(curr_pop, ffnn, sf.classification_error, num_chromosomes, print_selection)
-        print_selection = False
+        new_pop = ga.select(curr_pop, ffnn, sf.classification_error, num_chromosomes)
 
         # Update the fitnesses of the new population
         new_fitness = []
@@ -150,10 +136,8 @@ elif db.get_dataset_type() == 'regression':
             new_fitness.append(error)
 
         # Pair up members to crossover
-        new_pop = ga.crossover(new_pop, new_fitness, print_crossover)
-        print_crossover = False
-        new_pop = ga.mutate(new_pop, mutation_rate, mutation_std_div, print_mutate)
-        print_mutate = False
+        new_pop = ga.crossover(new_pop, new_fitness)
+        new_pop = ga.mutate(new_pop, mutation_rate, mutation_std_div)
 
         # Update the fitnesses of the new population
         new_fitness = []
@@ -166,8 +150,7 @@ elif db.get_dataset_type() == 'regression':
 
         # Create list of tuples of population and fitness and sort by fitness
         zipped_new_pop = sorted(zip(new_pop, new_fitness), key=lambda x: x[1])[::-1]
-        if t == num_generations - 1:
-            print('final average fitness ——>', zipped_new_pop[0][1])
+        print('Best fitness in generation', t + 1, '——>', zipped_new_pop[0][1])
         curr_pop = new_pop
         # curr_pop = [
         #     [new_chromosome[0] for new_chromosome in zipped_new_pop[0:len(zipped_new_pop) // 2]].append(
