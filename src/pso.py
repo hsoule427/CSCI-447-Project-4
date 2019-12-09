@@ -13,29 +13,31 @@ from copy import deepcopy
 @inertia        the inertia
 '''
 def velocity(v_prev, pbest, gbest, p, c1, c2, inertia):
-    c1 = np.random.rand() * 1.5
-    c2 = np.random.rand() * 1.5
-    return 0.1 * v_prev + c1 * (pbest - p) + c2 * (gbest - p)
+    return inertia * v_prev + c1 * (pbest - p) + c2 * (gbest - p)
 
 
 
 '''
-@param data             the db object
+@param data             the dataset
 @param layer_sizes      the number of neurons in each layer our neural net
 @param learning_rate    user defined learning rate (tune this?)
 @param hp               a set of the tunable hyperparameters, 
                         in this case an array of three params: [c1, c2, inertia]
 '''
-def main_loop(data, layer_sizes, learning_rate, hp, epochs=100):
+def main_loop(data, db_type, layer_sizes, learning_rate, hp, epochs=100):
     # Initialize set of particles/weights (1d)
     particles = [np.array([np.random.random() for i in range(sf.calc_total_vec_length(layer_sizes))]) \
-                    for i in range(20)]
+                    for i in range(5)]
     
-    p_best_pos = deepcopy(particles) # Stores list of best positions
-    p_best_scores = [float('inf') for i in range(len(particles))] # Stores list of best scores
+    p_best_pos = deepcopy(particles)
+    
+    if db_type == 'classification':
+        p_best_scores = [0 for i in range(len(particles))]
+    else: # regression
+        p_best_scores = [float('inf') for i in range(len(particles))]
     
     g_best_pos = deepcopy(particles[0])
-    g_best_score = float('inf')
+    g_best_score = 0 if db_type == 'classification' else float('inf')
     # Initialize the set of velocities, one for each particle
     v = [np.zeros(len(particles[0])) for i in range(len(particles))]
     # Initialize our net
@@ -44,7 +46,8 @@ def main_loop(data, layer_sizes, learning_rate, hp, epochs=100):
     c1 = hp[0]
     c2 = hp[1]
     inertia = hp[2]
-    
+    start_fts = 0
+
     for e in range(epochs):
         print('EPOCH: ', e)
         for i,p in enumerate(particles):
@@ -52,50 +55,49 @@ def main_loop(data, layer_sizes, learning_rate, hp, epochs=100):
             ffnn.set_weight(weight_vec)
             ffnn.set_biases(bias_vec)
             
-            cost = ffnn.get_fitness(sf.classification_error)
-            
-            if cost < g_best_score:
-                g_best_score = cost
-                g_best_pos = deepcopy(p)
-            
-            if cost < p_best_scores[i]:
-                p_best_scores[i] = cost
-                p_best_pos[i] = deepcopy(p)
-            
+            if db_type == 'classification':
+                cost = ffnn.zero_one_loss()[0]
+                if cost > g_best_score:
+                    g_best_score = cost
+                    g_best_pos = deepcopy(p)                
+                if cost > p_best_scores[i]:
+                    p_best_scores[i] = cost
+                    p_best_pos[i] = deepcopy(p)
+
+            else: # regression dataset
+                cost = ffnn.regression_error()[0]
+                if cost < g_best_score:
+                    g_best_score = cost
+                    g_best_pos = deepcopy(p)
+                if cost < p_best_scores[i]:
+                    p_best_scores[i] = cost
+                    p_best_pos[i] = deepcopy(p)
+
             # calculate velocity
             v[i] = velocity(v[i], p_best_pos[i], g_best_pos, p, c1, c2, inertia)
             particles[i] = particles[i] + v[i]
+        if e == 0:
+            start_fts = g_best_score
         
         weight_vec, bias_vec = sf.encode_weight_and_bias(g_best_pos, layer_sizes)
         ffnn.set_weight(weight_vec)
         ffnn.set_biases(bias_vec)
-        fitness = ffnn.get_fitness(sf.classification_error)
-        print("CURRENT BEST FITNESS = ", fitness)
-        print("AVG DISTANCE = ", sf.calc_avg_distance(particles))
+        
+        if db_type == 'classification':
+            fitness = ffnn.zero_one_loss()[0]
+        else: # regression
+            fitness = ffnn.regression_error()[0]
     
     # Get final fitness and avg distance, and return
     weight_vec, bias_vec = sf.encode_weight_and_bias(g_best_pos, layer_sizes)
     ffnn.set_weight(weight_vec)
     ffnn.set_biases(bias_vec)
-    fitness = ffnn.get_fitness(sf.classification_error)
+    if db_type == 'classification':
+        fitness = ffnn.zero_one_loss()[0]
+    else:
+        fitness = ffnn.regression_error()[0]
     avg_distance = sf.calc_avg_distance(particles)
-    return fitness, avg_distance
-
-            
-def test_velocity(layer_sizes):
-    p1 = np.array([np.random.random() for i in range(5)])
-    p2 = np.array([np.random.random() for i in range(5)])
-    p3 = np.array([np.random.random() for i in range(5)])
-    print("P1:")
-    print(p1)
-    print("P2:")
-    print(p2)
-    print("P3:")
-    print(p3)
-    v_prev = 0
-    v = velocity(v_prev, p1, p2, p3)
-    print("Velocity:")
-    print(v)
+    return start_fts, fitness, g_best_pos
 
     
 

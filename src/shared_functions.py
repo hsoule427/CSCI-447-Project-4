@@ -139,9 +139,8 @@ def squared_error(a, d):
     return (a - d) ** 2
 
 
-
-            
-    
-
-        
-
+def compute_rate(s, f, n):
+    if (s-f) == 0:
+        return 0
+    else:
+        return (((s-f)/n) / (s-f))
