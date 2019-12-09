@@ -68,7 +68,7 @@ def main_loop(data, db_type, layer_sizes, learning_rate, hp, generations=100):
     pr = hp[1]
     start_fts = 0
     
-    ffnn = FFNN.init_no_weights(data, learning_rate)
+    ffnn = FFNN.init_no_weights(data, learning_rate,layer_sizes=layer_sizes)
     population = [np.array([np.random.random() for i in range(sf.calc_total_vec_length(layer_sizes))]) \
                     for i in range(5)]
     
