@@ -123,6 +123,7 @@ class FFNN():
                     if e == 0 or e == num_epoch - 1:
                         num_correct, total = self.zero_one_loss()
                         print('Epoch {}: {} / {}'.format(e, num_correct, total))
+
                 else:
                     num_correct, total = self.zero_one_loss()
                     print('Epoch {}: {} / {}'.format(e, num_correct, total))

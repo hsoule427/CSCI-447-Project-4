@@ -63,13 +63,13 @@ def crossover(pop, fitnesses):
 
         # If the two mates are the same individual,
         # try to replace one of the mates
-        while mates[idx][0] == mates[idx][1]:
+        while np.array_equal(mates[idx][0], mates[idx][1]):
             mates[idx][1] = pop[roulette_wheel_selection(cumulative_sum, random.random())]
 
         # Perform single-point crossover
-        pivot = randint(1, len(mates[idx][0]) - 2)
-        children.append([mates[idx][0][0:pivot] + mates[idx][1][pivot:]])
-        children.append(mates[idx][1][0:pivot] + mates[idx][0][pivot:])
+        pivot = randint(round(len(mates[idx][0]) * 0.25, 1), round(len(mates[idx][0]) * 0.75, 1))
+        children.append(np.append(mates[idx][0][0:pivot], mates[idx][1][pivot:]))
+        children.append(np.append(mates[idx][1][0:pivot], mates[idx][0][pivot:]))
 
     return children
 
@@ -78,7 +78,7 @@ def mutate(pop, mutation_rate, std_div):
     for chromosome in pop:
         mutated_chrom = chromosome[:]
         for val_idx in range(len(chromosome)):
-            rand_float = random.random(0, 1)
+            rand_float = random.random()
             if rand_float <= mutation_rate:
                 mutated_chrom[val_idx] += random.gauss(0, std_div)
         mutated_pop.append(mutated_chrom)
